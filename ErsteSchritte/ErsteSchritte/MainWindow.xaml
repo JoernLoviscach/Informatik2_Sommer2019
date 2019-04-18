@@ -14,5 +14,8 @@
         <RadioButton Content="+ 19 % MwSt" HorizontalAlignment="Left" Margin="270,127,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
         <Label Content="netto €" HorizontalAlignment="Left" Margin="193,40,0,0" VerticalAlignment="Top"/>
         <Label Content="brutto €" HorizontalAlignment="Left" Margin="200,166,0,0" VerticalAlignment="Top"/>
+        <Ellipse x:Name="ellipseOben"  Fill="Black" HorizontalAlignment="Left" Height="100" Margin="453,20,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
+        <Ellipse x:Name="ellipseMitte" Fill="Black" HorizontalAlignment="Left" Height="100" Margin="453,125,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
+        <Ellipse x:Name="ellipseUnten" Fill="Black" HorizontalAlignment="Left" Height="100" Margin="453,230,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </Window>
