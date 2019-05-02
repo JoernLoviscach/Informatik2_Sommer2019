@@ -24,13 +24,15 @@ namespace Heizlast
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Wand w1 = new Wand(4.0, 3.0, 0.3);
-            Wand w2 = new Wand(5.0, 3.0, 0.3);
-            Wand w3 = new Wand(6.0, 3.0, 0.3);
-            Wand w4 = new Wand(6.0, 3.0, 1.0);
-            Wand w5 = new Wand(6.0, 3.0, 0.3);
-            Wand w6 = new Wand(4.0, 3.0, 0.3);
-            Wand w7 = new Wand(5.0, 3.0, 0.3);
+            // TODO: Ein paar mehr Fenster wären schön.
+            Fenster f1 = new Fenster(1.5, 1.5, 1.3);
+            Wand w1 = new Wand(new Fenster[] { f1 }, 4.0, 3.0, 0.3);
+            Wand w2 = new Wand(new Fenster[0], 5.0, 3.0, 0.3);
+            Wand w3 = new Wand(new Fenster[0], 6.0, 3.0, 0.3);
+            Wand w4 = new Wand(new Fenster[0], 6.0, 3.0, 1.0);
+            Wand w5 = new Wand(new Fenster[0], 6.0, 3.0, 0.3);
+            Wand w6 = new Wand(new Fenster[0], 4.0, 3.0, 0.3);
+            Wand w7 = new Wand(new Fenster[0], 5.0, 3.0, 0.3);
             Raum r1 = new Raum(new Wand[] { w1, w3, w4, w6 }, 22.0, "Schlafzimmmer");
             Raum r2 = new Raum(new Wand[] { w2, w4, w5, w7 }, 24.0, "Wohnzimmmer");
             Raum r3 = new Raum(new Wand[] { w1, w2, w3, w5, w6, w7 }, 10.0, "Außenraum");
@@ -38,30 +40,53 @@ namespace Heizlast
         }
     }
 
+    class Fenster
+    {
+        double breite;
+        public double Breite { get { return breite; } }
+        double höhe;
+        public double Höhe { get { return höhe; } }
+        double uWert;
+        public double UWert { get { return uWert; } }
+
+        public Fenster(double breite, double höhe, double uWert)
+        {
+            this.breite = breite;
+            this.höhe = höhe;
+            this.uWert = uWert;
+        }
+    }
+
     class Raum
     {
-        Wand[] Wände;
-        public double Lufttemperatur; // TODO: keine öffentlichen Felder
-        string Name;
-
-        public Raum(Wand[] w, double lt, string n)
+        Wand[] wände;
+        double lufttemperatur;
+        public double Lufttemperatur
         {
-            Wände = w;
-            Lufttemperatur = lt;
-            Name = n;
+            get { return lufttemperatur; }
+            //set { lufttemperatur = value; }
+        }
 
-            for (int i = 0; i < Wände.Length; i++)
+        string name;
+
+        public Raum(Wand[] wände, double lufttemperatur, string name)
+        {
+            this.wände = wände;
+            this.lufttemperatur = lufttemperatur;
+            this.name = name;
+
+            for (int i = 0; i < wände.Length; i++)
             {
-                Wände[i].SetzeRaum(this);
+                wände[i].SetzeRaum(this);
             }
         }
 
         public double BerechneHeizbedarf()
         {
             double summe = 0.0;
-            for (int i = 0; i < Wände.Length; i++)
+            for (int i = 0; i < wände.Length; i++)
             {
-                summe += Wände[i].BerechneVerlust();
+                summe += wände[i].BerechneVerlustAus(this);
             }
             return summe;
         }
@@ -69,35 +94,56 @@ namespace Heizlast
 
     class Wand
     {
-        double Breite;
-        double Höhe;
-        double UWert;
-        Raum Raum1;
-        Raum Raum2;
+        double breite;
+        double höhe;
+        double uWert;
+        Raum raumA;
+        Raum raumB;
+        Fenster[] fenster;
 
-        public Wand(double b, double h, double u)
+        public Wand(Fenster[] fenster, double breite, double höhe, double uWert)
         {
-            Breite = b;
-            Höhe = h;
-            UWert = u;
+            this.fenster = fenster;
+            this.breite = breite;
+            this.höhe = höhe;
+            this.uWert = uWert;
         }
 
-        public double BerechneVerlust()
+        // Wärme, die aus Raum r strömt, wird positiv gerechnet.
+        public double BerechneVerlustAus(Raum r)
         {
-            // TODO: Vorzeichen ist ggf. falsch
-            double tDiff = Raum1.Lufttemperatur - Raum2.Lufttemperatur;
-            return Breite * Höhe * UWert * tDiff;
+            double tDiff;
+            if (r == raumA)
+            {
+                tDiff = raumA.Lufttemperatur - raumB.Lufttemperatur;
+            }
+            else
+            {
+                tDiff = raumB.Lufttemperatur - raumA.Lufttemperatur;
+            }
+
+            double fenstergesamtfläche = 0.0;
+            double wärmeverlustkoeffizientFenster = 0.0;
+            for (int i = 0; i < fenster.Length; i++)
+            {
+                double fläche = fenster[i].Breite * fenster[i].Höhe;
+                fenstergesamtfläche += fläche;
+                wärmeverlustkoeffizientFenster += fläche * fenster[i].UWert;
+            }
+
+            return ((breite * höhe - fenstergesamtfläche) * uWert
+                        + wärmeverlustkoeffizientFenster) * tDiff;
         }
 
         public void SetzeRaum(Raum raum)
         {
-            if(Raum1 == null)
+            if(raumA == null)
             {
-                Raum1 = raum;
+                raumA = raum;
             }
             else
             {
-                Raum2 = raum;
+                raumB = raum;
             }
         }
     }
