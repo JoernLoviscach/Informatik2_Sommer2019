@@ -21,6 +21,10 @@ namespace Haushaltsbuch
             this.beschreibung = beschreibung;
         }
         public abstract decimal BerechneGesamtbetragBis(DateTime datum);
+        public override string ToString()
+        {
+            return Zeitpunkt.ToString("d") + ": " + Betrag + ", " + Beschreibung;
+        }
     }
 
     class EinmaligeBuchung : Buchungsposten
@@ -81,6 +85,19 @@ namespace Haushaltsbuch
                 kontostand += buchungen[i].BerechneGesamtbetragBis(datum);
             }
             return kontostand;
+        }
+
+        public string GibProtokoll()
+        {
+            List<Buchungsposten> buchungenSortiert = buchungen.OrderBy(b => b.Zeitpunkt).ToList();
+
+            string s = "";
+            for (int i = 0; i < buchungenSortiert.Count; i++)
+            {
+                Buchungsposten b = buchungenSortiert[i];
+                s += b + Environment.NewLine;
+            }
+            return s;
         }
     }
 }

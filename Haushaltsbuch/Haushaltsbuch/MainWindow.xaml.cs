@@ -35,6 +35,21 @@ namespace Haushaltsbuch
             decimal d1 = k.BerechneStandAm(new DateTime(2019, 4, 4));
             decimal d2 = k.BerechneStandAm(new DateTime(2019, 5, 5));
             decimal d3 = k.BerechneStandAm(new DateTime(2019, 6, 6));
+
+            Buchungsposten b3 = b1; // Upcast
+
+            if (b3 is MonatlicheBuchung)
+            {
+                MonatlicheBuchung b4 = (MonatlicheBuchung)b3; // Downcast
+            }
+
+            MonatlicheBuchung b5 = b3 as MonatlicheBuchung; // Downcast
+            if (b5 != null)
+            {
+                //...
+            }
+
+            textblockAusgabe.Text = k.GibProtokoll();
         }
     }
 }
