@@ -23,6 +23,20 @@ namespace Haushaltsbuch
         public MainWindow()
         {
             InitializeComponent();
+
+            List<List<int>> a = new List<List<int>>();
+            List<List<int>> b = a;
+            a.Add(new List<int>());
+            a.Add(new List<int>());
+            a.Add(a[0]);
+            a[0].Add(7);
+            a[0].Add(8);
+            Queue<int> c = new Queue<int>();
+            c.Enqueue(9);
+            c.Enqueue(10);
+            int x = a[2][1];
+            int y = b.Count;
+            int z = c.Dequeue();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

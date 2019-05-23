@@ -90,14 +90,28 @@ namespace Haushaltsbuch
         public string GibProtokoll()
         {
             List<Buchungsposten> buchungenSortiert = buchungen.OrderBy(b => b.Zeitpunkt).ToList();
+            DateTime zeitpunktDerLetztenBuchung = buchungen.Max(b => b.Zeitpunkt);
+            decimal mittlererBetrag = buchungen.Average(b => Math.Abs(b.Betrag));
+            var x = 42.0;
+            var y = "bla";
+            var z = new EinmaligeBuchung(123, DateTime.Now, "test");
+            //z = "gehts?"; // Fehler, denn var heißt: Der Compiler erschließt den Typ, aber der Typ ist fest.
+            
+            //string s = "";
+            //for (int i = 0; i < buchungenSortiert.Count; i++)
+            //{
+            //    Buchungsposten b = buchungenSortiert[i];
+            //    s += b + Environment.NewLine;
+            //}
+            //foreach (Buchungsposten b in buchungenSortiert)
+            //{
+            //    s += b + Environment.NewLine;
+            //}
+            //return s;
 
-            string s = "";
-            for (int i = 0; i < buchungenSortiert.Count; i++)
-            {
-                Buchungsposten b = buchungenSortiert[i];
-                s += b + Environment.NewLine;
-            }
-            return s;
+            return buchungen
+                .OrderBy(b => b.Zeitpunkt)
+                .Aggregate("", (bisherEingesammelt, b) => bisherEingesammelt + b + Environment.NewLine, s => s);
         }
     }
 }
