@@ -1,0 +1,20 @@
+﻿<Window x:Class="ZiehenMitDerMausUndSchnittpunktBerechnen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ZiehenMitDerMausUndSchnittpunktBerechnen"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Canvas x:Name="zeichenfläche">
+            <Ellipse x:Name="Anfasser1" Fill="Red" Width="20" Height="20" />
+            <Ellipse x:Name="Anfasser2" Fill="Red" Width="20" Height="20" />
+            <Ellipse x:Name="Anfasser3" Fill="Green" Width="20" Height="20" />
+            <Ellipse x:Name="Anfasser4" Fill="Green" Width="20" Height="20" />
+            <Ellipse x:Name="Schnittpunkt" Fill="Blue" Width="20" Height="20" />
+            <Line x:Name="Linie1" Stroke="Red" StrokeThickness="2"/>
+            <Line x:Name="Linie2" Stroke="Green" StrokeThickness="2"/>
+        </Canvas>
+    </Grid>
+</Window>
