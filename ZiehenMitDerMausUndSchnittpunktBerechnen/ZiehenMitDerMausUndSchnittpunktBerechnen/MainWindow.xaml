@@ -8,10 +8,10 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Canvas x:Name="zeichenfläche">
-            <Ellipse x:Name="Anfasser1" Fill="Red" Width="20" Height="20" />
-            <Ellipse x:Name="Anfasser2" Fill="Red" Width="20" Height="20" />
-            <Ellipse x:Name="Anfasser3" Fill="Green" Width="20" Height="20" />
-            <Ellipse x:Name="Anfasser4" Fill="Green" Width="20" Height="20" />
+            <Ellipse x:Name="Anfasser1" Fill="Red" Width="20" Height="20" MouseDown="Anfasser_MouseDown" MouseMove="Anfasser_MouseMove" MouseUp="Anfasser_MouseUp" />
+            <Ellipse x:Name="Anfasser2" Fill="Red" Width="20" Height="20" MouseDown="Anfasser_MouseDown" MouseMove="Anfasser_MouseMove" MouseUp="Anfasser_MouseUp" />
+            <Ellipse x:Name="Anfasser3" Fill="Green" Width="20" Height="20" MouseDown="Anfasser_MouseDown" MouseMove="Anfasser_MouseMove" MouseUp="Anfasser_MouseUp" />
+            <Ellipse x:Name="Anfasser4" Fill="Green" Width="20" Height="20" MouseDown="Anfasser_MouseDown" MouseMove="Anfasser_MouseMove" MouseUp="Anfasser_MouseUp" />
             <Ellipse x:Name="Schnittpunkt" Fill="Blue" Width="20" Height="20" />
             <Line x:Name="Linie1" Stroke="Red" StrokeThickness="2"/>
             <Line x:Name="Linie2" Stroke="Green" StrokeThickness="2"/>

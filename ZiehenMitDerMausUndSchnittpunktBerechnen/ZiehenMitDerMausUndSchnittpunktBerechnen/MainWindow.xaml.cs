@@ -55,6 +55,8 @@ namespace ZiehenMitDerMausUndSchnittpunktBerechnen
             Linie2.Y1 = y3;
             Linie2.X2 = x4;
             Linie2.Y2 = y4;
+            // Hier sind Exceptions der Regelfall.
+            // So sollte man Exceptions eigentlich nicht einsetzen.
             try
             {
                 double nenner = (x1 - x2) * (y4 - y3) - (y1 - y2) * (x4 - x3);
@@ -82,6 +84,40 @@ namespace ZiehenMitDerMausUndSchnittpunktBerechnen
             {
                 Schnittpunkt.Visibility = Visibility.Hidden;
             }
+        }
+
+        bool mausGedrückt;
+        double xVorher;
+        double yVorher;
+        private void Anfasser_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Ellipse anfasser = (Ellipse)sender; // Downcast
+            Point maus = e.GetPosition(zeichenfläche);
+            xVorher = maus.X;
+            yVorher = maus.Y;
+            mausGedrückt = true;
+            anfasser.CaptureMouse();
+        }
+
+        private void Anfasser_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mausGedrückt)
+            {
+                Ellipse anfasser = (Ellipse)sender; // Downcast
+                Point maus = e.GetPosition(zeichenfläche);
+                Canvas.SetLeft(anfasser, Canvas.GetLeft(anfasser) + maus.X - xVorher);
+                Canvas.SetTop(anfasser, Canvas.GetTop(anfasser) + maus.Y - yVorher);
+                xVorher = maus.X;
+                yVorher = maus.Y;
+                JustiereGrafik();
+            }
+        }
+
+        private void Anfasser_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Ellipse anfasser = (Ellipse)sender; // Downcast
+            mausGedrückt = false;
+            anfasser.ReleaseMouseCapture();
         }
     }
 }
