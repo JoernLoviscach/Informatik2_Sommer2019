@@ -34,24 +34,40 @@ namespace ParallelCoordinates
             OpenFileDialog ofd = new OpenFileDialog();
             if(ofd.ShowDialog() == true)
             {
+                zeichenfläche.Children.Clear();
                 string[] zeilen = File.ReadAllLines(ofd.FileName, Encoding.GetEncoding(850));
-                for (int i = 1; i < zeilen.Length; i++)
+                for (int i = 1; i < zeilen.Length; i += 10)
                 {
-                    string[] teile = zeilen[i].Split(';');
-                    string tatort = teile[2];
-                    string[] teileTMJ = teile[0].Split('.');
-                    DateTime tatzeit = new DateTime(
-                        int.Parse(teileTMJ[2]),
-                        int.Parse(teileTMJ[1]),
-                        int.Parse(teileTMJ[0]),
-                        int.Parse(teile[1].Substring(0, 2)),
-                        int.Parse(teile[1].Substring(2, 2)),
-                        0);
-                    int tatbestand = int.Parse(teile[3]);
-                    int geldbuße = int.Parse(teile[4]);
+                    try
+                    {
+                        string[] teile = zeilen[i].Split(';');
+                        string tatort = teile[2];
+                        string[] teileTMJ = teile[0].Split('.');
+                        DateTime tatzeit = new DateTime(
+                            int.Parse(teileTMJ[2]),
+                            int.Parse(teileTMJ[1]),
+                            int.Parse(teileTMJ[0]),
+                            int.Parse(teile[1].Substring(0, 2)),
+                            int.Parse(teile[1].Substring(2, 2)),
+                            0);
+                        int tatbestand = int.Parse(teile[3]);
+                        decimal geldbuße = decimal.Parse(teile[4]);
 
+                        Polyline polyline = new Polyline();
+                        polyline.Points.Add(new Point(0, zeichenfläche.ActualHeight * (1 - (tatzeit - new DateTime(2018, 1, 1)).TotalHours / 8760 )));
+                        polyline.Points.Add(new Point(zeichenfläche.ActualWidth / 3, 0));
+                        polyline.Points.Add(new Point(zeichenfläche.ActualWidth * 2 / 3, 0));
+                        polyline.Points.Add(new Point(zeichenfläche.ActualWidth, zeichenfläche.ActualHeight * (double)(1 - geldbuße / 1760m)));
+                        polyline.Stroke = Brushes.Blue;
+                        polyline.Opacity = 0.01;
+                        polyline.StrokeThickness = 1.0;
+                        zeichenfläche.Children.Add(polyline);
+                    }
+                    catch (Exception)
+                    {
+                        //TODO: Mitzählen!
+                    }
                 }
-
             }
         }
     }

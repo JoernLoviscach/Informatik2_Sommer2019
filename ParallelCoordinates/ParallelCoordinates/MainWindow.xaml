@@ -8,6 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button Content="Lade Datei..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="111" Click="Button_Click"/>
+        <Canvas x:Name="zeichenfläche" HorizontalAlignment="Left" Height="383" Margin="145,26,0,0" VerticalAlignment="Top" Width="637"/>
 
     </Grid>
 </Window>
