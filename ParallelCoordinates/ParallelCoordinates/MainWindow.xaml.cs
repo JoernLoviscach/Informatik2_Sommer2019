@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace ParallelCoordinates
 {
-    /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -32,15 +29,56 @@ namespace ParallelCoordinates
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if(ofd.ShowDialog() == true)
+            if (ofd.ShowDialog() == true)
             {
                 zeichenfläche.Children.Clear();
-                string[] zeilen = File.ReadAllLines(ofd.FileName, Encoding.GetEncoding(850));
-                for (int i = 1; i < zeilen.Length; i += 10)
+
+                // TODO: Exceptions behandeln!
+                StreamReader sr = new StreamReader(ofd.FileName, Encoding.GetEncoding(850));
+
+                // TODO: Auch der Lösungsansatz mit StreamGeometry skaliert noch nicht.
+                // Man muss wohl Zwischenergebnisse in einer Bitmap sammeln.
+
+                string zeile = null;
+                StreamGeometry geometrie = null;
+                System.Windows.Shapes.Path pfad = null;
+                StreamGeometryContext ctx = null;
+                int anzahl = 0;
+
+                while ((zeile = sr.ReadLine()) != null)
                 {
+                    // Nicht zu viele Path-Objekte,
+                    // aber auch nicht zu große Pfade.
+                    if (anzahl % 50 == 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine(anzahl);
+
+                        if (anzahl != 0)
+                        {
+                            ctx.Close();
+                            geometrie.Freeze();
+                            pfad.Data = geometrie;
+                            zeichenfläche.Children.Add(pfad);
+                        }
+
+                        if(anzahl > 150000) // Mehr will mein Notebook nicht machen.
+                        {
+                            break;
+                        }
+
+                        pfad = new System.Windows.Shapes.Path();
+                        pfad.Stroke = Brushes.Blue;
+                        pfad.StrokeThickness = 1.0;
+                        pfad.Opacity = 0.01;
+
+                        geometrie = new StreamGeometry();
+                        ctx = geometrie.Open();
+                    }
+                    anzahl++;
+
                     try
                     {
-                        string[] teile = zeilen[i].Split(';');
+                        string[] teile = zeile.Split(';');
                         string tatort = teile[2];
                         string[] teileTMJ = teile[0].Split('.');
                         DateTime tatzeit = new DateTime(
@@ -53,20 +91,27 @@ namespace ParallelCoordinates
                         int tatbestand = int.Parse(teile[3]);
                         decimal geldbuße = decimal.Parse(teile[4]);
 
-                        Polyline polyline = new Polyline();
-                        polyline.Points.Add(new Point(0, zeichenfläche.ActualHeight * (1 - (tatzeit - new DateTime(2018, 1, 1)).TotalHours / 8760 )));
-                        polyline.Points.Add(new Point(zeichenfläche.ActualWidth / 3, 0));
-                        polyline.Points.Add(new Point(zeichenfläche.ActualWidth * 2 / 3, 0));
-                        polyline.Points.Add(new Point(zeichenfläche.ActualWidth, zeichenfläche.ActualHeight * (double)(1 - geldbuße / 1760m)));
-                        polyline.Stroke = Brushes.Blue;
-                        polyline.Opacity = 0.01;
-                        polyline.StrokeThickness = 1.0;
-                        zeichenfläche.Children.Add(polyline);
+                        TimeSpan wannImJahr = tatzeit - new DateTime(2018, 1, 1);
+
+                        ctx.BeginFigure(new Point(0, zeichenfläche.ActualHeight * (1.0 - Math.Floor(wannImJahr.TotalDays) / 364.0)), false, false);
+                        ctx.LineTo(new Point(zeichenfläche.ActualWidth / 3, zeichenfläche.ActualHeight * (1.0 - (wannImJahr.TotalDays % 24.0) / 24.0)), true, false);
+                        ctx.LineTo(new Point(zeichenfläche.ActualWidth * 2 / 3, zeichenfläche.ActualHeight * (1.0 - (tatort.ToUpper()[6] - 'A') / 25.0)), true, false);
+                        ctx.LineTo(new Point(zeichenfläche.ActualWidth, zeichenfläche.ActualHeight * (double)(1 - geldbuße / 1760m)), true, false);
                     }
                     catch (Exception)
                     {
-                        //TODO: Mitzählen!
+                        //TODO: Fehlerhafte Datensätze mitzählen!
                     }
+                }
+
+                sr.Close();
+
+                if (!zeichenfläche.Children.Contains(pfad))
+                {
+                    ctx.Close();
+                    geometrie.Freeze();
+                    pfad.Data = geometrie;
+                    zeichenfläche.Children.Add(pfad);
                 }
             }
         }
